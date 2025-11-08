@@ -108,6 +108,9 @@ export class EnvironmentVariables {
 	SMTP_PASSWORD!: string;
 
 	@IsString()
+	OPENAI_API_KEY!: string;
+
+	@IsString()
 	CLOUD_NAME!: string;
 
 	@IsString()
