@@ -72,8 +72,10 @@ TYPEORM_MIGRATIONS=src/database/migrations/*.ts
 ### 2. Install SQLite Support
 
 ```bash
-npm install sqlite3
+npm install
 ```
+
+SQLite3 is already included as a dependency. No extra setup needed.
 
 ### 3. Start with SQLite
 
@@ -82,6 +84,8 @@ npm run start:dev:sqlite
 ```
 
 The app will create `scholar_dev.sqlite` automatically. This is ignored by git.
+
+> **Note:** This script uses `cross-env` to set environment variables cross-platform (Windows, macOS, Linux).
 
 ---
 
