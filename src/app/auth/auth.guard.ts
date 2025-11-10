@@ -39,6 +39,17 @@ export class AuthGuard implements CanActivate {
 	 * @returns True if the request is authorized to proceed, throws an error otherwise
 	 */
 	async canActivate(context: ExecutionContext): Promise<boolean> {
+		// Dev bypass: skip auth in development for testing
+		if (process.env.NODE_ENV === 'development') {
+			const request = context.switchToHttp().getRequest();
+
+			// Attach a mock session/user for dev testing (endpoints don't require auth in dev)
+			request.session = { user: { id: 'dev-user-id', name: 'Dev User' } };
+			request.user = request.session.user;
+
+			return true;
+		}
+
 		const request = context.switchToHttp().getRequest();
 		const session = await this.auth.api.getSession({
 			headers: fromNodeHeaders(request.headers),
