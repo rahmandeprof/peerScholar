@@ -1,7 +1,3 @@
-import * as crypto from 'crypto';
-// @ts-expect-error - Node.js crypto polyfill for browser compatibility
-global.crypto = crypto;
-
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
