@@ -1,7 +1,7 @@
 ARG  NODE_ENV
 
 # BUILD FOR PRODUCTION
-FROM node:16-alpine AS build
+FROM node:18-alpine AS build
 
 WORKDIR /app
 
@@ -20,7 +20,7 @@ COPY . .
 
 
 # PRODUCTION
-FROM node:16-alpine3.14 AS production
+FROM node:18-alpine AS production
 
 WORKDIR /app
 
