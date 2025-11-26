@@ -18,6 +18,6 @@ export class StudyStreak extends IDAndTimestamp {
   @Column({ default: 0 })
   longestStreak!: number;
 
-  @Column({ type: 'datetime', nullable: true })
+  @Column({ type: 'timestamp', nullable: true })
   lastActivityDate!: Date | null;
 }

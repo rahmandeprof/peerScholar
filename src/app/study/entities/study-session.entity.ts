@@ -27,10 +27,10 @@ export class StudySession extends IDAndTimestamp {
   @Column({ type: 'int' })
   durationSeconds!: number;
 
-  @Column({ type: 'datetime' })
+  @Column({ type: 'timestamp' })
   startTime!: Date;
 
-  @Column({ type: 'datetime', nullable: true })
+  @Column({ type: 'timestamp', nullable: true })
   endTime!: Date;
 
   @Column({ default: false })
