@@ -79,14 +79,14 @@ export class AuthService {
     };
   }
 
-  async register(userData: CreateUserDto & { password?: string }) {
-    const hashedPassword = await bcrypt.hash(userData.password ?? '', 10);
+  async register(userData: CreateUserDto) {
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
     const userDataPlain = {
-      firstName: (userData as Record<string, unknown>).firstName as string,
-      lastName: (userData as Record<string, unknown>).lastName as string,
-      email: (userData as Record<string, unknown>).email as string,
-      department: (userData as Record<string, unknown>).department as string,
-      yearOfStudy: (userData as Record<string, unknown>).yearOfStudy as number,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      email: userData.email,
+      department: userData.department,
+      yearOfStudy: userData.yearOfStudy,
       password: hashedPassword,
     };
     const newUser = await this.usersService.create(userDataPlain);
