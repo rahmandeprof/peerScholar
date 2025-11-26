@@ -1,15 +1,15 @@
 import {
-	Body,
-	Controller,
-	Delete,
-	Get,
-	Param,
-	Patch,
-	Post,
-	UseGuards,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
 } from '@nestjs/common';
 
-import { AuthGuard } from '@/app/auth/auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 import { CreateUserDto } from '@/app/users/dto/create-user.dto';
 import { UpdateUserDto } from '@/app/users/dto/update-user.dto';
@@ -19,32 +19,32 @@ import { UsersService } from '@/app/users/users.service';
 import { Paginate, PaginateQuery } from 'nestjs-paginate';
 
 @Controller('users')
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard('jwt'))
 export class UsersController {
-	constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
-	@Post()
-	create(@Body() createUserDto: CreateUserDto) {
-		return this.usersService.create(createUserDto);
-	}
+  @Post()
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.create(createUserDto);
+  }
 
-	@Get()
-	public findAll(@Paginate() query: PaginateQuery) {
-		return this.usersService.findAll(query);
-	}
+  @Get()
+  public findAll(@Paginate() query: PaginateQuery) {
+    return this.usersService.findAll(query);
+  }
 
-	@Get(':id')
-	findOne(@Param('id') id: string) {
-		return this.usersService.findOne(id);
-	}
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.usersService.findOne(id);
+  }
 
-	@Patch(':id')
-	update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-		return this.usersService.update(id, updateUserDto);
-	}
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(id, updateUserDto);
+  }
 
-	@Delete(':id')
-	remove(@Param('id') id: string) {
-		return this.usersService.remove(id);
-	}
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.usersService.remove(id);
+  }
 }

@@ -1,0 +1,118 @@
+import { useState, useEffect } from 'react';
+import { FileText, Download, Search, BookOpen } from 'lucide-react';
+import api from '../lib/api';
+
+interface Material {
+  id: string;
+  title: string;
+  department: string;
+  yearLevel: number;
+  category: string;
+  createdAt: string;
+  isPublic: boolean;
+  url: string;
+}
+
+export function CommunityMaterials() {
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('');
+
+  useEffect(() => {
+    const fetchMaterials = async () => {
+      try {
+        const res = await api.get('/chat/materials');
+        // Filter for only public materials on the client side for now, 
+        // though backend should handle this logic too based on the updated API
+        setMaterials(res.data.filter((m: Material) => m.isPublic));
+      } catch (err) {
+        console.error('Failed to fetch materials', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMaterials();
+  }, []);
+
+  const filteredMaterials = materials.filter(m => 
+    m.title.toLowerCase().includes(filter.toLowerCase()) ||
+    m.department?.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  return (
+    <div className="h-full p-4 md:p-8 overflow-y-auto">
+      <div className="max-w-5xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+          <div>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center">
+              <BookOpen className="w-8 h-8 mr-3 text-primary-600" />
+              Community Materials
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">
+              Access resources shared by students in your department
+            </p>
+          </div>
+          
+          <div className="relative w-full md:w-64">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search materials..."
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 outline-none"
+            />
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+          </div>
+        ) : filteredMaterials.length === 0 ? (
+          <div className="text-center py-20 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800">
+            <BookOpen className="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
+            <h3 className="text-xl font-medium text-gray-900 dark:text-gray-100">No materials found</h3>
+            <p className="text-gray-500 dark:text-gray-400 mt-2">Be the first to share something with the community!</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredMaterials.map((material) => (
+              <div key={material.id} className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-800 hover:shadow-md transition-shadow">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg">
+                    <FileText className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+                  </div>
+                  <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+                    {material.category === 'past_question' ? 'Past Question' : 'Course Material'}
+                  </span>
+                </div>
+                
+                <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100 mb-2 line-clamp-2">
+                  {material.title}
+                </h3>
+                
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                    <span className="font-medium mr-2">Dept:</span> {material.department || 'General'}
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                    <span className="font-medium mr-2">Level:</span> Year {material.yearLevel || 'All'}
+                  </div>
+                </div>
+
+                <button 
+                  onClick={() => window.open(material.url, '_blank')}
+                  className="w-full py-2 flex items-center justify-center text-primary-600 dark:text-primary-400 font-medium hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Access Material
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
