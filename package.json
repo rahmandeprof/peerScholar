@@ -23,7 +23,7 @@
     "migration:run": "npm run typeorm -- migration:run",
     "migration:revert": "npm run typeorm -- migration:revert",
     "seed:run": "ts-node -r tsconfig-paths/register ./node_modules/@jorgebodega/typeorm-seeding/dist/cli.js seed -d ./src/database/ormconfig.ts ./src/database/seeders/*.ts",
-    "prepare": "node .husky/install.mjs"
+    "prepare": "node -e \"try { require('fs').accessSync('.husky'); require('child_process').execSync('node .husky/install.mjs') } catch (e) { console.log('Skipping husky install') }\""
   },
   "dependencies": {
     "@jorgebodega/typeorm-factory": "^2.1.0",
@@ -48,6 +48,7 @@
     "dotenv": "^16.5.0",
     "dotenv-expand": "^12.0.2",
     "ejs": "^3.1.10",
+    "express": "^4.21.2",
     "handlebars": "^4.7.8",
     "mammoth": "^1.11.0",
     "nestjs-paginate": "^12.5.0",
@@ -60,6 +61,7 @@
     "rxjs": "^7.8.2",
     "sqlite3": "^5.1.7",
     "typeorm": "^0.3.24",
+    "webpack": "^5.97.1",
     "winston": "^3.17.0"
   },
   "devDependencies": {

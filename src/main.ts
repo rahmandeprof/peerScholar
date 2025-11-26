@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-// @ts-ignore
+// @ts-expect-error - Node.js crypto polyfill for browser compatibility
 global.crypto = crypto;
 
 import { ValidationPipe } from '@nestjs/common';
@@ -51,6 +51,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       ...trustedOrigins,
+      'https://peerscholar.vercel.app',
       new RegExp(CLIENT_URL_REGEX),
       new RegExp(PREVIEW_CLIENT_URL_REGEX),
     ],
