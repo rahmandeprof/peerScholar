@@ -2,7 +2,10 @@ import axios, { AxiosError } from 'axios';
 
 const api = axios.create({
   baseURL:
-    import.meta.env.VITE_API_URL ?? 'https://peerscholar.onrender.com/v1',
+    (
+      (import.meta.env.VITE_API_URL as string | undefined) ??
+      'https://peerscholar.onrender.com/v1'
+    ).replace(/\/v1\/?$/, '') + '/v1',
   withCredentials: true,
   timeout: 30000, // 30 seconds
 });
