@@ -5,22 +5,22 @@ import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 @Entity()
 export class Session extends IDAndTimestamp {
-	@ManyToOne(() => User)
-	@JoinColumn({ name: 'userId' })
-	userId: string;
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'userId' })
+  userId!: string;
 
-	@Column({ type: String })
-	token: string;
+  @Column({ type: String })
+  token!: string;
 
-	@Column({ type: Date })
-	expiresAt: Date;
+  @Column({ type: Date })
+  expiresAt!: Date;
 
-	@Column({ type: String, nullable: true })
-	ipAddress: string | null;
+  @Column({ type: String, nullable: true })
+  ipAddress!: string | null;
 
-	@Column({ type: String, nullable: true })
-	userAgent: string | null;
+  @Column({ type: String, nullable: true })
+  userAgent!: string | null;
 
-	@Column({ type: String, nullable: true })
-	impersonatedBy: string | null;
+  @Column({ type: String, nullable: true })
+  impersonatedBy!: string | null;
 }

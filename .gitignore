@@ -36,5 +36,7 @@ lerna-debug.log*
 
 # Environment
 .env
+.env.example
+.env.backup
 *.sqlite
 *.sqlite3

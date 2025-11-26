@@ -1,3 +1,7 @@
+import * as crypto from 'crypto';
+// @ts-ignore
+global.crypto = crypto;
+
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
@@ -5,42 +9,56 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 
 import { AppModule } from '@/app/app.module';
 
+import { LoggingInterceptor } from './app/common/interceptors/logging.interceptor';
+
 import { EnvironmentVariables } from '@/validation/env.validation';
 
 import { CLIENT_URL_REGEX, PREVIEW_CLIENT_URL_REGEX } from '@/utils/constants';
-import { validationExceptionFactory } from '@/utils/validation';
+
+import { GlobalExceptionFilter } from './app/common/filters/http-exception.filter';
+import { validationExceptionFactory } from './utils/validation';
 
 async function bootstrap() {
-	const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-		bodyParser: false,
-	});
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bodyParser: false,
+  });
 
-	app.set('query parser', 'extended');
+  app.set('query parser', 'extended');
 
-	const config: ConfigService<EnvironmentVariables, true> =
-		app.get(ConfigService);
+  const config: ConfigService<EnvironmentVariables, true> =
+    app.get(ConfigService);
 
-	app.setGlobalPrefix('v1');
-	app.useGlobalPipes(
-		new ValidationPipe({
-			whitelist: true,
-			exceptionFactory: validationExceptionFactory,
-		}),
-	);
+  app.setGlobalPrefix('v1');
 
-	const trustedOrigins = config.get<string>('TRUSTED_ORIGINS').split(',');
+  // Global exception filter
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
-	app.enableCors({
-		origin: [
-			...trustedOrigins,
-			new RegExp(CLIENT_URL_REGEX),
-			new RegExp(PREVIEW_CLIENT_URL_REGEX),
-		],
-		credentials: true,
-	});
+  // Global logging interceptor
+  app.useGlobalInterceptors(new LoggingInterceptor());
 
-	const port = config.get<number>('PORT');
+  // Global validation pipe
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      exceptionFactory: validationExceptionFactory,
+    }),
+  );
 
-	await app.listen(port);
+  const trustedOrigins = config.get<string>('TRUSTED_ORIGINS').split(',');
+
+  app.enableCors({
+    origin: [
+      ...trustedOrigins,
+      new RegExp(CLIENT_URL_REGEX),
+      new RegExp(PREVIEW_CLIENT_URL_REGEX),
+    ],
+    credentials: true,
+  });
+
+  const port = config.get<number>('PORT');
+
+  await app.listen(port);
 }
 void bootstrap();
