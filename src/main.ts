@@ -15,9 +15,7 @@ import { GlobalExceptionFilter } from './app/common/filters/http-exception.filte
 import { validationExceptionFactory } from './utils/validation';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    bodyParser: false,
-  });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.set('query parser', 'extended');
 
