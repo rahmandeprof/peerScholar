@@ -6,8 +6,10 @@ import {
   Post,
   Req,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 import { MaterialCategory } from './entities/material.entity';
@@ -18,10 +20,11 @@ import { ChatService } from './chat.service';
 import { Request } from 'express';
 
 interface RequestWithUser extends Request {
-  user?: User;
+  user: User;
 }
 
 @Controller('chat')
+@UseGuards(AuthGuard('jwt'))
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
@@ -39,15 +42,7 @@ export class ChatController {
     },
     @Req() req: RequestWithUser,
   ) {
-    const user =
-      req.user ??
-      ({
-        id: 'mock-user-id',
-        department: 'Computer Science',
-        yearOfStudy: 3,
-      } as User);
-
-    return this.chatService.saveMaterial(user, file, body);
+    return this.chatService.saveMaterial(req.user, file, body);
   }
 
   @Post('message')
@@ -55,16 +50,8 @@ export class ChatController {
     @Body() body: { conversationId?: string; content: string },
     @Req() req: RequestWithUser,
   ) {
-    const user =
-      req.user ??
-      ({
-        id: 'mock-user-id',
-        department: 'Computer Science',
-        yearOfStudy: 3,
-      } as User);
-
     return this.chatService.sendMessage(
-      user,
+      req.user,
       body.conversationId ?? null,
       body.content,
     );
@@ -72,15 +59,12 @@ export class ChatController {
 
   @Get('history')
   getHistory(@Req() req: RequestWithUser) {
-    const user = req.user ?? ({ id: 'mock-user-id' } as User);
-
-    return this.chatService.getConversations(user);
+    return this.chatService.getConversations(req.user);
   }
 
   @Get('history/:id')
   async getConversation(@Param('id') id: string, @Req() req: RequestWithUser) {
-    const user = req.user ?? ({ id: 'mock-user-id' } as User);
-    const conversation = await this.chatService.getConversation(id, user);
+    const conversation = await this.chatService.getConversation(id, req.user);
     const messages = await this.chatService.getMessages(id);
 
     return {
@@ -95,14 +79,6 @@ export class ChatController {
 
   @Get('materials')
   getMaterials(@Req() req: RequestWithUser) {
-    const user =
-      req.user ??
-      ({
-        id: 'mock-user-id',
-        department: 'Computer Science',
-        yearOfStudy: 3,
-      } as User);
-
-    return this.chatService.getMaterials(user);
+    return this.chatService.getMaterials(req.user);
   }
 }
