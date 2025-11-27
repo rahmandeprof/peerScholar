@@ -5,7 +5,9 @@ const api = axios.create({
     (
       (import.meta.env.VITE_API_URL as string | undefined) ??
       'https://peerscholar.onrender.com/v1'
-    ).replace(/\/v1\/?$/, '') + '/v1',
+    )
+      .replace(/\/+$/, '')
+      .replace(/\/v1$/, '') + '/v1',
   withCredentials: true,
   timeout: 30000, // 30 seconds
 });
