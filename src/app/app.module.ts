@@ -4,6 +4,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 
 import { AdminModule } from '@/app/admin/admin.module';
 import { AuthModule } from '@/app/auth/auth.module';
+import { ChatModule } from '@/app/chat/chat.module';
 import { CommonModule } from '@/app/common/common.module';
 import { OtpModule } from '@/app/otp/otp.module';
 import { StudyModule } from '@/app/study/study.module';
@@ -38,6 +39,7 @@ import configuration from '@/config/configuration';
     MailModule,
     AdminModule,
     StudyModule,
+    ChatModule,
     CommonModule,
   ],
   controllers: [AppController],
