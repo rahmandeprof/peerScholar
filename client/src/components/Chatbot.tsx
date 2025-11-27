@@ -13,6 +13,7 @@ export function Chatbot() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const toast = useToast();
 
   const handleSend = async () => {
@@ -24,7 +25,16 @@ export function Chatbot() {
     setLoading(true);
 
     try {
-      const res = await api.post('/chat/message', { content: input });
+      const res = await api.post('/chat/message', { 
+        content: input,
+        conversationId 
+      });
+      
+      // Save conversation ID from first response
+      if (!conversationId && res.data.conversation?.id) {
+        setConversationId(res.data.conversation.id);
+      }
+
       const assistantMessage: Message = {
         role: 'assistant',
         content: res.data.assistantMessage.content,
@@ -36,6 +46,12 @@ export function Chatbot() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleNewChat = () => {
+    setMessages([]);
+    setConversationId(null);
+    setInput('');
   };
 
   const handlePersonalUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,13 +81,29 @@ export function Chatbot() {
 
   return (
     <div className="flex flex-col h-full relative">
-      <CompactTimer />
+      <div className="flex justify-between items-center px-4 py-2 border-b border-gray-100 dark:border-gray-800">
+        <CompactTimer />
+        <button
+          onClick={handleNewChat}
+          className="text-sm text-gray-500 hover:text-primary-600 transition-colors"
+        >
+          New Chat
+        </button>
+      </div>
 
       <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-4">
         {messages.length === 0 ? (
           <div className="text-center text-gray-500 dark:text-gray-400 mt-20">
             <h2 className="text-2xl font-bold mb-2 text-gray-900 dark:text-gray-100">Welcome to peerScholar</h2>
-            <p>Ask me anything about your study materials!</p>
+            <p className="mb-4">Ask me anything about your study materials!</p>
+            {conversationId && (
+              <button 
+                onClick={handleNewChat}
+                className="text-primary-600 hover:underline text-sm"
+              >
+                Start a new chat
+              </button>
+            )}
           </div>
         ) : (
           messages.map((msg, idx) => (
